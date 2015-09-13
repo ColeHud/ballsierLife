@@ -6,9 +6,13 @@ Available at:  www.eapathfinders.com/license
 All other use is strictly prohibited. 
 */
 
+var gyroTime = 0;
 var tilt = function(events, connection)
 {
-	connection.sendMessage(events);
+	if(gyroTime % 20 == 0)
+	{
+		connection.sendMessage(events);
+	}
 }
 
 $(document).ready(function () 
@@ -24,6 +28,7 @@ $(document).ready(function ()
 	if (window.DeviceOrientationEvent) 
 	{
     	window.addEventListener("deviceorientation", function () {
+    		gyroTime++;
         	tilt({"type":"gyro", "alpha": event.alpha, "beta": event.beta, "gamma": event.gamma}, conn);
     	}, true);
 	}
