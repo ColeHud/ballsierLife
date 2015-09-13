@@ -5,7 +5,17 @@ var numberOfPlayers = 0;
 
 app.get('/', function (req, res) {
 	numberOfPlayers++;
- 	res.redirect("http://mhackslocal.colehudson.net/" + numberOfPlayers);
+	console.log("Attempt to connect. " + numberOfPlayers + " players");
+	
+	if(numberOfPlayers <= 8)
+	{
+		res.redirect("http://mhackslocal.colehudson.net/" + numberOfPlayers);
+	}
+	else
+	{
+		res.send("<html><h1>Sorry, there are no available spots :(</h1></html>");
+	}
+ 	
 });
 
 var server = app.listen(3000, function () 
