@@ -16,36 +16,47 @@ public class PlayerController : MonoBehaviour {
 	public AudioClip bump;
 	public AudioClip boostSound;
 	public int lives;
+	public int cid;
 
 	private Rigidbody rb;
 	private AudioSource source;
 	private int boostCounter;
 	private bool boosting;
 	private Vector3 originSize;
+	private int inactiveTime;
 
 	void Start () {
-		BCMessenger.Instance.RegisterListener ("boost", 0, this.gameObject, "StartBoost");
-		BCMessenger.Instance.RegisterListener ("gyro" ,0, this.gameObject, "MovePlayer");
 		//BCMessenger.Instance.RegisterListener ("
+		BCMessenger.Instance.RegisterListener ("boost", 0, this.gameObject, "StartBoost");
+		BCMessenger.Instance.RegisterListener ("gyro" , 0, this.gameObject, "MovePlayer");
 		rb = GetComponent<Rigidbody>();	
 		boostCounter = 0;
 		boosting = false;
 		originSize = this.transform.localScale;
 		source = GetComponent<AudioSource> ();
+		boostSpeed = 20;
+		lives = 5;
 	}
 
 	void FixedUpdate () {
 		boostCounter++;
+		inactiveTime++;
+		print (inactiveTime);
+		if (inactiveTime > 500) {
+			GameObject temp = (GameObject)Instantiate(bigBoom, this.transform.position, Quaternion.identity);
+			source.PlayOneShot(death, 0.5f);
+			if(this.gameObject != null)
+			{
+				Destroy(this.gameObject);
+			}
+			//this.gameObject.SetActive(false);
+		}
 		float moveHorizontal = Input.GetAxis("Horizontal");
 		float moveVertical = Input.GetAxis("Vertical");
 		bool boost = Input.GetKeyUp ("space");
 
 		if (boosting && boostCounter > boostDur) {
 			StopBoost();
-		}
-
-		if (!boosting && boost) {
-			StartBoost ();
 		}
 
 		Vector3 movement = new Vector3(moveHorizontal, 0.0f, moveVertical);
@@ -58,23 +69,32 @@ public class PlayerController : MonoBehaviour {
 			GameObject temp = (GameObject)Instantiate(bigBoom, this.transform.position, Quaternion.identity); 
 			source.PlayOneShot(death, 0.5f);
 			lives--;
-			if(lives >= 0){
-				rb.position = new Vector3(0.0f, 8f, 0.0f);
+			if(lives > 0){
+				rb.position = new Vector3(0.0f, 5f, 0.0f);
+			} else {
+				if(this.gameObject != null)
+				{
+					Destroy(this.gameObject);
+				}
+				//this.gameObject.SetActive (false);
 			}
 		}
 	}
 
 	void OnCollisionEnter (Collision other) {
-		Debug.Log ("ColEnter");
 		if (other.gameObject.CompareTag ("Player")) {
-			GameObject temp = (GameObject)Instantiate(spark, this.transform.position, Quaternion.identity); 
+			GameObject temp = (GameObject)Instantiate(boostCloud, other.rigidbody.position, Quaternion.identity); 
 			source.PlayOneShot(bump, 0.1f);
 		}
 	}
 
-	void StartBoost () {
-		rb.AddExplosionForce (boostSpeed,rb.position - rb.velocity, 0.0f, .25f, ForceMode.Impulse);
-		GameObject temp = (GameObject)Instantiate (boostCloud, this.transform.position, Quaternion.identity);
+	void StartBoost (ControllerMessage msg) {
+		if(msg.ControllerSource != cid){
+			return;
+		}
+		inactiveTime = 0;
+		rb.AddExplosionForce (boostSpeed, (rb.position - rb.velocity), 0.0f, 0.0f, ForceMode.Impulse);
+		GameObject temp = (GameObject)Instantiate (boostCloud, rb.position, Quaternion.identity);
 		//this.transform.localScale = 2f * this.transform.localScale;
 		source.PlayOneShot (boostSound, 0.5f);
 		boosting = true;
@@ -88,6 +108,10 @@ public class PlayerController : MonoBehaviour {
 	}
 
 	void MovePlayer(ControllerMessage msg){
+		if(msg.ControllerSource != cid){
+			return;
+		}
+		inactiveTime = 0;
 		float x = 0;
 		float z = 0;
 		if (msg.Payload.HasField ("beta")) {
