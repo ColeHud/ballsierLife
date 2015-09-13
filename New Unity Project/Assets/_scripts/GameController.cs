@@ -15,22 +15,29 @@ public class GameController : MonoBehaviour
 		BCMessenger.Instance.RegisterListener ("disconnect", 0, this.gameObject, "HandleDisconnect");
 	}
 
-	private void HandleConnect(ControllerMessage msg) {
+	private void HandleConnect(ControllerMessage msg) 
+	{
 		int controlID = msg.ControllerSource;
-		/*
+
 		if (controlID > playerDB.Length) 
 		{
 			return;
 		}
-		*/
-		Instantiate (playerDB[controlID], new Vector3 (0f, 5f, 0f), Quaternion.identity);
+		if (playerDB [controlID])
+		{
+			Instantiate (playerDB[controlID], new Vector3 (0f, 5f, 0f), Quaternion.identity);
+		}
 	}
 
 	private void HandleDisconnect(ControllerMessage msg) 
 	{
-		int controlID = msg.ControllerSource;
-		if (playerDB [controlID] != null) {
-			Destroy (playerDB[controlID]);
+		if (this.gameObject) {
+			int controlID = msg.ControllerSource;
+			if (playerDB [controlID]) {
+				//BCMessenger.DestroyObject (playerDB [controlID]);
+				//Destroy (playerDB[controlID]);
+				this.gameObject.SetActive(false);
+			}
 		}
 	} 
 }

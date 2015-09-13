@@ -45,9 +45,10 @@ public class PlayerController : MonoBehaviour {
 		if (inactiveTime > 500) {
 			GameObject temp = (GameObject)Instantiate(bigBoom, this.transform.position, Quaternion.identity);
 			source.PlayOneShot(death, 0.5f);
-			if(this.gameObject != null)
+			if(this.gameObject)
 			{
-				Destroy(this.gameObject);
+				//Destroy(this.gameObject);
+				this.gameObject.SetActive (false);
 			}
 			//this.gameObject.SetActive(false);
 		}
@@ -72,9 +73,10 @@ public class PlayerController : MonoBehaviour {
 			if(lives > 0){
 				rb.position = new Vector3(0.0f, 5f, 0.0f);
 			} else {
-				if(this.gameObject != null)
+				if(this.gameObject)
 				{
-					Destroy(this.gameObject);
+					//Destroy(this.gameObject);
+					this.gameObject.SetActive (false);
 				}
 				//this.gameObject.SetActive (false);
 			}

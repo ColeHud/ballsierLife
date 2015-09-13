@@ -6,13 +6,15 @@ var numberOfPlayers = 0;
 app.get('/', function (req, res) {
 	numberOfPlayers++;
 	console.log("Attempt to connect. " + numberOfPlayers + " players");
-	
+
 	if(numberOfPlayers <= 8)
 	{
-		res.redirect("http://mhackslocal.colehudson.net/" + numberOfPlayers);
+		console.log("Redirecting to page");
+		res.redirect("http://35.3.54.157:8088/" + numberOfPlayers);
 	}
 	else
 	{
+		console.log("Match is full");
 		res.send("<html><h1>Sorry, there are no available spots :(</h1></html>");
 	}
  	
