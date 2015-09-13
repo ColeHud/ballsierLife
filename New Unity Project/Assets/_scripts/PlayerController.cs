@@ -36,6 +36,7 @@ public class PlayerController : MonoBehaviour {
 		source = GetComponent<AudioSource> ();
 		boostSpeed = 20;
 		lives = 5;
+		speed = 12;
 	}
 
 	void FixedUpdate () {

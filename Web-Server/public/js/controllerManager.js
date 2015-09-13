@@ -9,8 +9,9 @@ All other use is strictly prohibited.
 var gyroTime = 0;
 var tilt = function(events, connection)
 {
-	if(gyroTime % 20 == 0)
+	if(gyroTime % 5 == 0)
 	{
+		gyroTime = 0;
 		connection.sendMessage(events);
 	}
 }
